@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="94">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Header Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Resource Files"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Source Files"
+                   projectFiles="true">
+      <itemPath>main.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Test Files"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Important Files"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>Makefile</itemPath>
+    </logicalFolder>
+    <itemPath>AquaException.cpp</itemPath>
+    <itemPath>AquaException.h</itemPath>
+    <itemPath>AquaFile.cpp</itemPath>
+    <itemPath>AquaFile.h</itemPath>
+    <itemPath>AquaHelp.cpp</itemPath>
+    <itemPath>AquaHelp.h</itemPath>
+    <itemPath>AquaParam.cpp</itemPath>
+    <itemPath>AquaParam.h</itemPath>
+    <itemPath>AquaParamFeature.cpp</itemPath>
+    <itemPath>AquaParamFeature.h</itemPath>
+    <itemPath>AquaUtils.cpp</itemPath>
+    <itemPath>AquaUtils.h</itemPath>
+  </logicalFolder>
+  <projectmakefile>Makefile</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <ccTool>
+          <commandLine>-std=c++0x</commandLine>
+        </ccTool>
+      </compileType>
+      <item path="AquaException.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaException.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaFile.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaFile.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaHelp.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaHelp.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaParam.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaParam.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaParamFeature.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaParamFeature.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaUtils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaUtils.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <compilerSet>default</compilerSet>
+        <dependencyChecking>true</dependencyChecking>
+        <rebuildPropChanged>false</rebuildPropChanged>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+      <item path="AquaException.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaException.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaFile.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaFile.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaHelp.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaHelp.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaParam.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaParam.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaParamFeature.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaParamFeature.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="AquaUtils.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+      <item path="AquaUtils.h" ex="false" tool="3" flavor2="0">
+      </item>
+      <item path="main.cpp" ex="false" tool="1" flavor2="0">
+      </item>
+    </conf>
+  </confs>
+</configurationDescriptor>
