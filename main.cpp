@@ -26,16 +26,7 @@ using namespace std;
 
 std::vector<AquaParamFeature *> AquaParam::features;
 std::string AquaHelp::name = "Fasta(q) MC Sample";
-std::string AquaHelp::version = "2.0.0";
-
-class Tpair{
-public:
-    string dna1;
-    string qual1;
-    
-    string dna2;
-    string qual2;
-};
+std::string AquaHelp::version = "0.3.0";
 
 std::string revcom(std::string data) {
     std::string rew = std::string(data.rbegin(), data.rend());
@@ -55,11 +46,20 @@ std::string revcom(std::string data) {
     return std::string(newdna2);
 }
 
+int meanQuality(std::string basequal){
+    //cout << (int) basequal.at(0) - 33 << " ";
+    int sum = 0;
+    for (int i=0; i<basequal.length(); i++){
+        sum += ((int) basequal.at(i) - 33);
+    }
+    return (int) (sum / basequal.length());
+}
+
 std::string rev(std::string data) {
     return std::string(data.rbegin(), data.rend());
 }
 
-void sampleFastq(FILE * pt, FILE * &ptOut, int percentClip, int leftClip, int rightClip, int minClip, int maxClip){
+void sampleFastq(FILE * pt, FILE * &ptOut, int percentClip, int leftClip, int rightClip, int minClip, int maxClip, int qualCut, int qualCutK, int outCov){
     int numReads = 0;
     int numReadsTotal = 0;
     int numBases = 0;
@@ -89,18 +89,21 @@ void sampleFastq(FILE * pt, FILE * &ptOut, int percentClip, int leftClip, int ri
             squal = squal.substr(0, squal.size()-1);
         }
         
-        int mc = rand() % 100 + 1;
+        if (sseq.length() != squal.length()) continue;
+        
+        int mc = rand() % 10000 + 1;
         if (mc > percentClip){ continue; }
         
-        if (sseq.size() > leftClip){
+        if (sseq.length() > leftClip){
             sseq = sseq.substr(leftClip);
             squal = squal.substr(leftClip);
+            
         } else {
             continue;
         }
         
         if (rightClip > 0){
-            int newSize = sseq.size() - rightClip;
+            int newSize = sseq.length() - rightClip;
             if (newSize > 0){
                 sseq = sseq.substr(0, newSize);
                 squal = squal.substr(0, newSize);
@@ -109,14 +112,29 @@ void sampleFastq(FILE * pt, FILE * &ptOut, int percentClip, int leftClip, int ri
             }
         }
         
-        if (sseq.size() > maxClip){
+        if (sseq.length() > maxClip){
             sseq = sseq.substr(0, maxClip);
             squal = squal.substr(0, maxClip);
         }
         
+        if (qualCut > 0){
+            int i = 0;
+            for (; i<squal.length()-qualCutK+1; i++){
+                if (meanQuality(squal.substr(i,qualCutK))<qualCut){
+                    break;
+                }
+            }
+            if (i == 0){
+                continue;
+            } else if (i != squal.length()){
+                sseq = sseq.substr(0, i);
+                squal = squal.substr(0, i);
+            }
+        }
+        
         if (sseq.size() < minClip){
             continue;
-        }        
+        }
         
         numReads++;
         numBases += sseq.size();
@@ -127,6 +145,10 @@ void sampleFastq(FILE * pt, FILE * &ptOut, int percentClip, int leftClip, int ri
     cout << "# reads in: " << numReadsTotal << endl;
     cout << "# reads out: " << numReads << endl;
     cout << "# bases: " << numBases << endl;
+    if (outCov > 0){
+        cout.precision(4);
+        cout << "# exp cov: ~" << ((float)numBases / outCov) << endl;
+    }
 }
 
 int main(int argc, char** argv) {
@@ -141,6 +163,12 @@ int main(int argc, char** argv) {
         AquaParamFeature * pMin        = new AquaParamFeature(string("-s"), true, " Min read size (default: 50)");
         AquaParamFeature * pMax        = new AquaParamFeature(string("-b"), true, " Max read size (default: 9999), cut bp after this number");
         
+        AquaParamFeature * pQualCut    = new AquaParamFeature(string("-q"), true, " Apply quality clip on 5' reads to bases under the phred score");
+        AquaParamFeature * pQualCutK   = new AquaParamFeature(string("-k"), true, " k-mer value to quality mean (default: 4)");
+        
+        AquaParamFeature * pOutName    = new AquaParamFeature(string("-o"), true, " Output file name");
+        AquaParamFeature * pOutCov     = new AquaParamFeature(string("-c"), true, " Depth coverage analysis");
+        
         AquaParamFeature * pHelp       = new AquaParamFeature(string("-h"), false, " Show this help");
         AquaParamFeature * pVersion    = new AquaParamFeature(string("-v"), false, " Show version");
         AquaParam::startArgs(argc, argv);
@@ -151,6 +179,9 @@ int main(int argc, char** argv) {
         if (pRight->value == "") pRight->value = "0";
         if (pMin->value == "") pMin->value = "50";
         if (pMax->value == "") pMax->value = "9999";
+        if (pQualCut->value == "") pQualCut->value = "0";
+        if (pQualCutK->value == "") pQualCutK->value = "4";
+        if (pOutCov->value == "") pOutCov->value = "0";
         AquaParam::checkRequireds();
         
         //AquaUtils::mkDir(pOut->value);
@@ -162,11 +193,17 @@ int main(int argc, char** argv) {
         
         stringstream ss;
         ss.str("");
-        ss << last << "_sample_n_" << pSampleSize->value ;
-        if (pLeft->value != "17") ss << "_l_" << pLeft->value ;
-        if (pRight->value != "0") ss << "_r_" << pRight->value;
-        if (pMin->value != "50") ss << "_min_" << pMin->value;
-        if (pMax->value != "9999") ss << "_max_" << pMax->value;
+        if (pOutName->value == ""){
+            ss << last << "_sample_n_" << pSampleSize->value ;
+            if (pLeft->value != "17") ss << "_l_" << pLeft->value ;
+            if (pRight->value != "0") ss << "_r_" << pRight->value;
+            if (pMin->value != "50") ss << "_min_" << pMin->value;
+            if (pMax->value != "9999") ss << "_max_" << pMax->value;
+            if (pQualCut->value != "0") ss << "_qual_" << pQualCut->value;
+            if (pQualCutK->value != "4") ss << "_qualk_" << pQualCutK->value;
+        } else {
+            ss << pOutName->value;
+        }
         
         char *a = new char[2];
 	fgets(a, 2, pt);
@@ -193,12 +230,17 @@ int main(int argc, char** argv) {
         int rightClip = atoi(pRight->value.c_str());
         int minClip = atoi(pMin->value.c_str());
         int maxClip = atoi(pMax->value.c_str());
-        int percentClip = atoi(pSampleSize->value.c_str());
+        int percentClip = atof(pSampleSize->value.c_str()) * 100;
+        cout << "Percent: " << (float)percentClip/100 << endl;
+        int qualCut = atoi(pQualCut->value.c_str());
+        int qualCutK = atoi(pQualCutK->value.c_str());
+        qualCut = (int) (qualCut * qualCutK) / (qualCutK + 1);
+        int outCov = atoi(pOutCov->value.c_str());
         FILE * ptOut = fHandler->open(ss.str().c_str(), "w+");
         if (tipo == 1){
             //no implemented yet
         } else {
-            sampleFastq(pt, ptOut, percentClip, leftClip, rightClip, minClip, maxClip);
+            sampleFastq(pt, ptOut, percentClip, leftClip, rightClip, minClip, maxClip, qualCut, qualCutK, outCov);
         }
                 
     } catch (AquaException e){

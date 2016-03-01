@@ -25,7 +25,7 @@ AquaHelp::~AquaHelp() {
 
 void AquaHelp::show(char ** argv) {
     cout << AquaHelp::name << " v" << AquaHelp::version << endl;
-    cout << "AQUACEN (c) 2015." << endl;
+    cout << "AQUACEN (c) 2016." << endl;
     cout << endl << "Use " << string(argv[0]) << " [options]" << endl;
     cout << "        options: " << endl;
     for (int i=0; i<AquaParam::features.size(); i++){
